@@ -60,6 +60,7 @@ parse_term input
         result_AST = fst primary_result
         result_leftovers = snd primary_result
 
+-- returns an int specifying the number of elements in the input that are part of the top parentheses level
 parse_parentheses :: [Token] -> Int -> Int -> Int
 parse_parentheses input level count
   | level == 0 = count
