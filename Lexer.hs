@@ -7,11 +7,11 @@ import Data.Maybe
 
 data AST = NODE Token AST AST | FLOAT Float | VAR String | EMPTY
 
-printAST :: AST -> String
-printAST (NODE token lChild rChild) = "(" ++ printAST lChild ++ ")" ++ token_to_string token ++ "(" ++ printAST rChild ++ ")"
-printAST (FLOAT float)              = show float
-printAST (VAR string)               = show string
-printAST EMPTY                      = ""
+printAST :: AST -> String -> String
+printAST (NODE token lChild rChild) prefix = "\n\t" ++ prefix  ++ printAST lChild (prefix ++ "\t") ++ "\n" ++ prefix ++ token_to_string token ++ "\n\t" ++ prefix ++ printAST rChild (prefix ++ "\t")
+printAST (FLOAT float) input = show float
+printAST (VAR string) input = show string
+printAST EMPTY input = ""
 
 data Token = LPAREN | RPAREN | EQUAL | SEMICOLON | ADDITION | SUBTRACTION | MULTIPLICATION | DIVISION | FP Float | VARIABLE String
   deriving Eq
