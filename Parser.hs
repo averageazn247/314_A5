@@ -5,10 +5,19 @@ import Data.List
 import Data.Char
 import Data.Maybe
 
+main :: IO ()
 main = do
   [f] <- getArgs
-  s   <- readFile f
-  writeFile "output.txt" (printAST (transformAST(fst (parse_expression (lexer s)))) "")
+  expression <- readFile f
+  read_eval_print expression 1
+
+read_eval_print :: String -> Int -> IO ()
+read_eval_print expression count =
+  if (elemIndex '\n' expression) == Nothing then return ()
+  else if (fromJust (elemIndex '\n' expression)) == 0 then read_eval_print (tail expression) count 
+  else do
+  writeFile ("output" ++ (show count) ++ ".txt") (printAST (transformAST(fst (parse_expression (lexer (take (fromJust (elemIndex '\n' expression)) expression))))) "")
+  read_eval_print (drop (fromJust (elemIndex '\n' expression)) expression) (count + 1)
 
 transformAST :: AST -> AST
 transformAST (NODE SUBTRACTION left (NODE ADDITION inner right)) = NODE ADDITION (NODE SUBTRACTION (transformAST left) (transformAST inner)) (transformAST right)
