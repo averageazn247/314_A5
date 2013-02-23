@@ -18,7 +18,15 @@ read_eval_print expression count =
   else do
   writeFile ("output" ++ (show count) ++ ".txt") (printAST (transformAST(fst (parse_expression (lexer (take (fromJust (elemIndex '\n' expression)) expression))))) "")
   read_eval_print (drop (fromJust (elemIndex '\n' expression)) expression) (count + 1)
+{-
+does a tree transformation to take care of the associativity problem
+the initial parsing makes everything right associative, which is invalid for subtraction and division
+this does a rotation as shown below, with a similar transform for division
 
+               -                                                     +
+  leftAST               +               ----->             -                 rightAST
+              innerAST     rightAST               leftAST    innerAST
+-}
 transformAST :: AST -> AST
 transformAST (NODE SUBTRACTION left (NODE ADDITION inner right)) = NODE ADDITION (NODE SUBTRACTION (transformAST left) (transformAST inner)) (transformAST right)
 transformAST (NODE DIVISION left (NODE MULTIPLICATION inner right)) = NODE MULTIPLICATION (NODE DIVISION (transformAST left) (transformAST inner)) (transformAST right)
