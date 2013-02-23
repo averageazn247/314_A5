@@ -8,6 +8,8 @@ main = do
   s   <- readFile f
   writeFile "output.txt" (concat (map (\x -> (token_to_string x) ++ " ") (lexer s)))
 
+data AST = AST Token AST AST | FLOAT Float | STRING String
+
 data Token = LPAREN | RPAREN | EQUAL | SEMICOLON | ADDITION | SUBTRACTION | MULTIPLICATION | DIVISION | FP Float | VARIABLE String
   deriving Eq
 --type FP = Float
@@ -42,3 +44,16 @@ token_to_string input
   | input == DIVISION = "DIVISION"
 token_to_string t@(FP x) = show x
 token_to_string t@(VARIABLE x) = show x
+
+parse_expression :: [Token] -> (AST, [Token])
+                         -- first token after parsing term == +   =  tree with + as the root, left side is parse_term, right side is the parse_expression of the leftover token from parsing the left side
+parse_expression input | head (snd (parse_term input)) == ADDITION = (AST ADDITION (fst (parse_term input)) (fst (parse_expression (tail (snd (parse_term input))))), snd (parse_expression (tail (snd (parse_term input)))))
+
+parse_term :: [Token] -> (AST, [Token])
+parse_term input = parse_primary input
+
+parse_primary :: [Token] -> (AST, [Token])
+parse_primary input = parse_fp input
+ 
+parse_fp :: [Token] -> (AST, [Token])
+parse_fp (FP x:xs) = (FLOAT x, xs)
