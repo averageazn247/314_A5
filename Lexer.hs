@@ -1,16 +1,17 @@
---module Lexer where
+module Lexer where
 
 import System.Environment
 import Data.List
 import Data.Char
 import Data.Maybe
 
-main = do
-  [f] <- getArgs
-  s   <- readFile f
-  writeFile "output.txt" (concat (map (\x -> (token_to_string x) ++ " ") (lexer s)))
+data AST = NODE Token AST AST | FLOAT Float | VAR String | EMPTY
 
-data AST = NODE Token AST AST | FLOAT Float | VAR String
+printAST :: AST -> String
+printAST (NODE token lChild rChild) = "(" ++ printAST lChild ++ ")" ++ token_to_string token ++ "(" ++ printAST rChild ++ ")"
+printAST (FLOAT float)              = show float
+printAST (VAR string)               = show string
+printAST EMPTY                      = ""
 
 data Token = LPAREN | RPAREN | EQUAL | SEMICOLON | ADDITION | SUBTRACTION | MULTIPLICATION | DIVISION | FP Float | VARIABLE String
   deriving Eq
