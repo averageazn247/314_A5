@@ -39,7 +39,7 @@ lexer input
   | otherwise = [FP 1] ++ lexer (tail input)
   where 
   endFloat = findIndex (\x -> not ((isDigit x) || x == '.')) (input)
-  endString = findIndex (\x -> not (isAlphaNum x)) (input)
+  endString = findIndex (\x -> not (x=='_' || isAlphaNum x)) (input)
 
 token_to_string :: Token -> [Char]
 token_to_string input
