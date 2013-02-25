@@ -17,7 +17,7 @@ read_eval_print expression count variable_map =
   if (eol) == Nothing then return ()
                       else if (fromJust eol) == 0 then read_eval_print (tail expression) count variable_map
   else if (head (lexer thisline) == VARIABLE "var") then read_eval_print nextline (count+1) (parse_variable (tail (lexer thisline)) (variable_map))
-  else if (head (lexer thisLine) == VARIABLE "def") then read_eval_print nextline (count+1) (parse_method (tail (lexer thisline)) (
+  else if (head (lexer thisline) == VARIABLE "def") then read_eval_print nextline (count+1) (parse_method (tail (lexer thisline)) (variable_map))
   else do
   writeFile ("output" ++ (show count) ++ ".txt") (show (evaluate (transformAST(fst (parse_expression (lexer (thisline))))) variable_map) )
   read_eval_print (nextline) (count + 1) variable_map
