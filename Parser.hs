@@ -41,9 +41,7 @@ transformAST (NODE ADDITION y z) = NODE ADDITION (transformAST y) (transformAST 
 transformAST (NODE MULTIPLICATION y z) = NODE MULTIPLICATION (transformAST y) (transformAST z)
 transformAST (NODE SUBTRACTION y z) = NODE SUBTRACTION (transformAST y) (transformAST z)
 transformAST (NODE DIVISION y z) = NODE DIVISION (transformAST y) (transformAST z)
-transformAST (FLOAT x) = FLOAT x
-transformAST (VAR x) = VAR x
-transformAST EMPTY = EMPTY
+transformAST (x) =  x
 
 parse_method :: [Token] -> Map String AST -> Map String AST
 parse_method (VARIABLE name:LPAREN:xs) var_map = Data.Map.insertWithKey collision_handler name value var_map
@@ -126,7 +124,13 @@ evaluate (NODE ADDITION l r )       var_map  = (evaluate l var_map ) + (evaluate
 evaluate (NODE SUBTRACTION l r )    var_map  = (evaluate l var_map ) - (evaluate r var_map )
 evaluate (NODE MULTIPLICATION l r ) var_map  = (evaluate l var_map ) * (evaluate r var_map )
 evaluate (NODE DIVISION l r )       var_map  = (evaluate l var_map ) / (evaluate r var_map )
-evaluate (VAR v ) var_map              = evaluate (fromJust (Data.Map.lookup v var_map)) var_map
+evaluate (VAR v )                   var_map  = evaluate (fromJust (Data.Map.lookup v var_map)) var_map
+evaluate (METHOD m args)            var_map  = evaluate (match_args ( fromJust (Data.Map.lookup m var_map)) args ) var_map
+
+match_args :: AST -> [AST] -> AST
+match_args (ARG_NUM n) args = args!!(n-1)
+match_args (NODE op l r) args = NODE op (match_args l args) (match_args r args)
+match_args x y = x
 
 
 
