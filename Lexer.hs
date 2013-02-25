@@ -5,7 +5,7 @@ import Data.List
 import Data.Char
 import Data.Maybe
 
-data AST = NODE Token AST AST | FLOAT Float | VAR String | EMPTY
+data AST = NODE Token AST AST | FLOAT Float | VAR String | METHOD String [AST] | ARG_NUM Int | EMPTY
 
 printAST :: AST -> String -> String
 printAST (NODE token lChild rChild) prefix = "\n\t" ++ prefix  ++ printAST lChild (prefix ++ "\t") ++ "\n" ++ prefix ++ token_to_string token ++ "\n\t" ++ prefix ++ printAST rChild (prefix ++ "\t")
