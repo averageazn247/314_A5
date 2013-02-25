@@ -5,7 +5,7 @@ import Data.List
 import Data.Char
 import Data.Maybe
 
-data AST = NODE Token AST AST | FLOAT Float | VAR String | EMPTY
+data AST = NODE Token AST AST | FLOAT Float | VAR String | METHOD String [AST] | ARG_NUM Int | EMPTY
 
 printAST :: AST -> String -> String
 printAST (NODE token lChild rChild) prefix = "\n\t" ++ prefix  ++ printAST lChild (prefix ++ "\t") ++ "\n" ++ prefix ++ token_to_string token ++ "\n\t" ++ prefix ++ printAST rChild (prefix ++ "\t")
@@ -13,7 +13,7 @@ printAST (FLOAT float) input = show float
 printAST (VAR string) input = show string
 printAST EMPTY input = ""
 
-data Token = LPAREN | RPAREN | EQUAL | SEMICOLON | ADDITION | SUBTRACTION | MULTIPLICATION | DIVISION | FP Float | VARIABLE String
+data Token = LPAREN | RPAREN | EQUAL | SEMICOLON | COMMA | ADDITION | SUBTRACTION | MULTIPLICATION | DIVISION | FP Float | VARIABLE String
   deriving Eq
 --type FP = Float
 --type VARIABLE = String
@@ -27,6 +27,7 @@ lexer input
   | head input == ')' = [RPAREN] ++ lexer (tail input)
   | head input == '=' = [EQUAL]  ++ lexer (tail input)
   | head input == ';' = [SEMICOLON] ++ lexer (tail input)
+  | head input == ',' = [COMMA] ++ lexer (tail input)
   | head input == '+' = [ADDITION] ++ lexer (tail input)
   | head input == '-' = [SUBTRACTION] ++ lexer (tail input)
   | head input == '*' = [MULTIPLICATION] ++ lexer (tail input)
